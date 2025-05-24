@@ -1,7 +1,7 @@
 #include "motor_control.h"
 #include <cmath>
 
-MotorController::MotorController(double noise_level)
+MotorController::MotorController(double noise_level, int pwm_max, int pwm_min, double error_full)
     : calib_state_(CalibState::NotCalibrated),
       public_state_(MotorControllerState::Initialising),
       hold_time_s_(1.0),
@@ -11,10 +11,13 @@ MotorController::MotorController(double noise_level)
       pwm_cb_(nullptr),
       hysteresis_(0.01),
       pot_min_(0.0),
-      pot_max_(1.0), // default, will be set by calibration
+      pot_max_(1.0),
       prev_measured_voltage_(0.0),
       stable_timer_(0.0),
-      noise_level_(noise_level)
+      noise_level_(noise_level),
+      pwm_max_(pwm_max),
+      pwm_min_(pwm_min),
+      error_full_(error_full)
 {}
 
 void MotorController::set_measured_voltage(double volts) {
@@ -48,9 +51,6 @@ void MotorController::start_calibration(double hold_time_s) {
 }
 
 void MotorController::update(double dt_s) {
-    // The stable_threshold is set to noise_level_ * 1.2.
-    // The factor 1.2 is a safety margin to ensure that the threshold is slightly larger than the expected measurement noise,
-    // making the detection of a stable (stopped) motor robust against random noise fluctuations.
     const double stable_threshold = noise_level_ * 1.2;
 
     switch (calib_state_) {
@@ -86,14 +86,18 @@ void MotorController::update(double dt_s) {
             }
             break;
         case CalibState::Calibrated: {
-            // Use calibrated min/max for control
             double target_voltage = pot_min_ + (target_percent_ / 100.0) * (pot_max_ - pot_min_);
+            double error = measured_voltage_ - target_voltage;
             int pwm = 0;
-            if (measured_voltage_ < target_voltage - hysteresis_) {
-                pwm = 1000;
+
+            // Use member variables for scaling
+            if (error < -hysteresis_) {
+                double scale = std::min(1.0, std::abs(error) / error_full_);
+                pwm = static_cast<int>(pwm_min_ + (pwm_max_ - pwm_min_) * scale);
                 public_state_ = MotorControllerState::Busy;
-            } else if (measured_voltage_ > target_voltage + hysteresis_) {
-                pwm = -1000;
+            } else if (error > hysteresis_) {
+                double scale = std::min(1.0, std::abs(error) / error_full_);
+                pwm = -static_cast<int>(pwm_min_ + (pwm_max_ - pwm_min_) * scale);
                 public_state_ = MotorControllerState::Busy;
             } else {
                 pwm = 0;

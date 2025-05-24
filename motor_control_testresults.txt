@@ -2,17 +2,26 @@
 === Test 1 ===
 Info: Motor calibrates to max and min positions
 motor_control_test.cpp:48 | Calibration completes and controller becomes idle [PASS]
-motor_control_test.cpp:54 | Calibrated min close to MOTOR_POT_MIN: value = -0.006915, center = 0.000000, tol = 0.055000 [PASS]
-motor_control_test.cpp:55 | Calibrated max close to MOTOR_POT_MAX: value = 4.991403, center = 5.000000, tol = 0.055000 [PASS]
+motor_control_test.cpp:54 | Calibrated min close to MOTOR_POT_MIN: value = 0.975884, center = 1.000000, tol = 0.055000 [PASS]
+motor_control_test.cpp:55 | Calibrated max close to MOTOR_POT_MAX: value = 3.991403, center = 4.000000, tol = 0.055000 [PASS]
 
 === Test 2 ===
 Info: Motor regulates to 50% position
-motor_control_test.cpp:70 | Motor reaches 50% position: value = 2.543973, center = 2.492244, tol = 0.055000 [PASS]
+motor_control_test.cpp:70 | Motor reaches 50% position: value = 2.460235, center = 2.483644, tol = 0.055000 [PASS]
 
 === Test 3 ===
 Info: Motor regulates to 100% position
-motor_control_test.cpp:83 | Motor reaches max position: value = 5.020337, center = 4.991403, tol = 0.055000 [PASS]
+motor_control_test.cpp:83 | Motor reaches max position: value = 3.975799, center = 3.991403, tol = 0.055000 [PASS]
 
 === Test 4 ===
 Info: Motor regulates to 0% position
-motor_control_test.cpp:96 | Motor reaches min position: value = -0.026810, center = -0.006915, tol = 0.055000 [PASS]
+motor_control_test.cpp:96 | Motor reaches min position: value = 0.966635, center = 0.975884, tol = 0.055000 [PASS]
+
+=== Test 5 ===
+Info: PWM output ramps down as error decreases
+motor_control_test.cpp:137 | PWM ramps down as error decreases [PASS]
+
+=== Test 6 ===
+Info: Motor does not overshoot or oscillate near the target position
+motor_control_test.cpp:179 | No overshoot beyond max target [PASS]
+motor_control_test.cpp:180 | No PWM oscillation near target [FAIL]
