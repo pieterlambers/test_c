@@ -1,0 +1,18 @@
+
+=== Test 1 ===
+Info: Motor calibrates to max and min positions
+motor_control_test.cpp:48 | Calibration completes and controller becomes idle [PASS]
+motor_control_test.cpp:51 | Calibrated min close to MOTOR_POT_MIN: value = 0, center = 0 [PASS]
+motor_control_test.cpp:52 | Calibrated max close to MOTOR_POT_MAX: value = 5000, center = 5000 [PASS]
+
+=== Test 2 ===
+Info: Motor regulates to 50% position
+motor_control_test.cpp:69 | Motor reaches 50% position: value = 2500, center = 2500 [PASS]
+
+=== Test 3 ===
+Info: Motor regulates to 100% position
+motor_control_test.cpp:82 | Motor reaches max position: value = 5000, center = 5000 [PASS]
+
+=== Test 4 ===
+Info: Motor regulates to 0% position
+motor_control_test.cpp:95 | Motor reaches min position: value = 0, center = 0 [PASS]

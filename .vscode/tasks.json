@@ -13,6 +13,7 @@
                 "motor_control.cpp",
                 "motor_simulation.cpp",
                 "motor_simulation_test.cpp",
+                "motor_control_test.cpp",
                 "-o",
                 "${fileDirname}/motor_prj"
             ],
