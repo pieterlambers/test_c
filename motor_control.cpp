@@ -9,7 +9,7 @@ MotorController::MotorController(double noise_level, int pwm_max, int pwm_min, d
       target_percent_(0.0),
       measured_voltage_(0.0),
       pwm_cb_(nullptr),
-      hysteresis_(0.01),
+      hysteresis_(2 * noise_level + 0.01),
       pot_min_(0.0),
       pot_max_(1.0),
       prev_measured_voltage_(0.0),
