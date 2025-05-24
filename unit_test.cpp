@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstdio>
+#include <cmath>
 
 static std::ofstream ut_log_file;
 static int current_test_number = 0;
@@ -31,10 +32,11 @@ void UT_TestInfo(const std::string& text) {
     ut_log("Info: " + text + "\n");
 }
 
-bool UT_CheckInRange_impl(int value, int center, int tolerance, const std::string& text, const char* file, int line) {
+bool UT_CheckInRange_impl(double value, double center, double tolerance, const std::string& text, const char* file, int line) {
     bool passed = (value >= center - tolerance && value <= center + tolerance);
     std::string msg = std::string(file) + ":" + std::to_string(line) + " | " + text +
         ": value = " + std::to_string(value) + ", center = " + std::to_string(center) +
+        ", tol = " + std::to_string(tolerance) +
         (passed ? " [PASS]\n" : " [FAIL]\n");
     ut_log(msg);
     return passed;

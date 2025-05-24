@@ -67,7 +67,7 @@ void Run_MotorControl_Tests() {
 
     double v_target = ctrl.get_pot_min() + 0.5 * (ctrl.get_pot_max() - ctrl.get_pot_min());
     double v_actual = motor_get_pot_voltage();
-    UT_CheckInRange((int)(v_actual * 1000), (int)(v_target * 1000), tol, "Motor reaches 50% position");
+    UT_CheckInRange(v_actual, v_target, MOTOR_MEAS_NOISE_V + 0.005, "Motor reaches 50% position");
 
     // --- Test 3: Regulation to max position ---
     UT_SetTestNumber(3);
@@ -80,7 +80,7 @@ void Run_MotorControl_Tests() {
     }
     v_target = ctrl.get_pot_max();
     v_actual = motor_get_pot_voltage();
-    UT_CheckInRange((int)(v_actual * 1000), (int)(v_target * 1000), tol, "Motor reaches max position");
+    UT_CheckInRange(v_actual, v_target, MOTOR_MEAS_NOISE_V + 0.005, "Motor reaches max position");
 
     // --- Test 4: Regulation to min position ---
     UT_SetTestNumber(4);
@@ -93,7 +93,7 @@ void Run_MotorControl_Tests() {
     }
     v_target = ctrl.get_pot_min();
     v_actual = motor_get_pot_voltage();
-    UT_CheckInRange((int)(v_actual * 1000), (int)(v_target * 1000), tol, "Motor reaches min position");
+    UT_CheckInRange(v_actual, v_target, MOTOR_MEAS_NOISE_V + 0.005, "Motor reaches min position");
 
     std::cout << "Motor control tests complete.\n";
 }
