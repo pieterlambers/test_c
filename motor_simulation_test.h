@@ -1,3 +1,3 @@
 #pragma once
 
-void Run_MotorTests();
+void Run_MotorSimulation_Tests();

@@ -1,15 +1,15 @@
 #include "unit_test.h"
 #include <iostream>
 #include <fstream>
-#include <cstdio> // For std::remove
+#include <cstdio>
 
 static std::ofstream ut_log_file;
+static int current_test_number = 0;
 
 void UT_SetLogFile(const std::string& filename) {
     if (ut_log_file.is_open()) {
         ut_log_file.close();
     }
-    // Delete the file if it exists
     std::remove(filename.c_str());
     ut_log_file.open(filename, std::ios::out | std::ios::app);
 }
@@ -20,6 +20,15 @@ static void ut_log(const std::string& msg) {
         ut_log_file << msg;
         ut_log_file.flush();
     }
+}
+
+void UT_SetTestNumber(int number) {
+    current_test_number = number;
+    ut_log("\n=== Test " + std::to_string(number) + " ===\n");
+}
+
+void UT_TestInfo(const std::string& text) {
+    ut_log("Info: " + text + "\n");
 }
 
 bool UT_CheckInRange_impl(int value, int center, int tolerance, const std::string& text, const char* file, int line) {
