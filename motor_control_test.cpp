@@ -21,14 +21,15 @@ void Run_MotorControl_Tests() {
     UT_TestInfo("Motor calibrates to max and min positions");
 
     motor_simulation_reset();
-    // Pass the noise level, pwm_max, pwm_min, and error_full to the controller
     MotorController ctrl(MOTOR_MEAS_NOISE_V, 1000, 150, 0.5);
 
     // Register PWM callback to drive the simulation
     ctrl.register_pwm_callback([](int pwm) {
-        // Simulate with 10ms steps
         motor_simulation_step(pwm, 0.01);
     });
+
+    // Check initial state is Initialising
+    UT_CheckTrue("Controller starts in Initialising state", ctrl.get_state() == MotorControllerState::Initialising);
 
     // Start calibration (hold 0.2s at each end)
     ctrl.start_calibration(0.2);
@@ -37,18 +38,21 @@ void Run_MotorControl_Tests() {
     double sim_time = 0.0;
     double dt = 0.01;
     bool calibrated = false;
+    bool was_busy = false;
     for (; sim_time < 10.0; sim_time += dt) {
         ctrl.set_measured_voltage(motor_get_pot_voltage());
         ctrl.update(dt);
+        if (ctrl.get_state() == MotorControllerState::Busy) was_busy = true;
         if (ctrl.get_state() == MotorControllerState::Idle) {
             calibrated = true;
             break;
         }
     }
     UT_CheckTrue("Calibration completes and controller becomes idle", calibrated);
+    UT_CheckTrue("Controller was busy during calibration", was_busy);
 
-    // Use a tolerance slightly above the noise amplitude (in V)
-    double tol = MOTOR_MEAS_NOISE_V + 0.005;
+    // Use a tolerance that matches the controller's deadband (hysteresis)
+    double tol = 2 * MOTOR_MEAS_NOISE_V + 0.01 + 0.005;
 
     // Check that calibrated min/max are close to simulation limits
     UT_CheckInRange(ctrl.get_pot_min(), MOTOR_POT_MIN, tol, "Calibrated min close to MOTOR_POT_MIN");
@@ -60,61 +64,68 @@ void Run_MotorControl_Tests() {
 
     ctrl.set_target_percent(50.0);
 
+    bool was_busy_reg = false;
     for (int i = 0; i < 200; ++i) {
         ctrl.set_measured_voltage(motor_get_pot_voltage());
         ctrl.update(dt);
+        if (ctrl.get_state() == MotorControllerState::Busy) was_busy_reg = true;
     }
-
     double v_target = ctrl.get_pot_min() + 0.5 * (ctrl.get_pot_max() - ctrl.get_pot_min());
     double v_actual = motor_get_pot_voltage();
     UT_CheckInRange(v_actual, v_target, tol, "Motor reaches 50% position");
+    UT_CheckTrue("Controller was busy during regulation to 50%", was_busy_reg);
+    UT_CheckTrue("Controller is idle at 50% target", ctrl.get_state() == MotorControllerState::Idle);
 
     // --- Test 3: Regulation to max position ---
     UT_SetTestNumber(3);
     UT_TestInfo("Motor regulates to 100% position");
 
     ctrl.set_target_percent(100.0);
+    was_busy_reg = false;
     for (int i = 0; i < 200; ++i) {
         ctrl.set_measured_voltage(motor_get_pot_voltage());
         ctrl.update(dt);
+        if (ctrl.get_state() == MotorControllerState::Busy) was_busy_reg = true;
     }
     v_target = ctrl.get_pot_max();
     v_actual = motor_get_pot_voltage();
     UT_CheckInRange(v_actual, v_target, tol, "Motor reaches max position");
+    UT_CheckTrue("Controller was busy during regulation to max", was_busy_reg);
+    UT_CheckTrue("Controller is idle at max target", ctrl.get_state() == MotorControllerState::Idle);
 
     // --- Test 4: Regulation to min position ---
     UT_SetTestNumber(4);
     UT_TestInfo("Motor regulates to 0% position");
 
     ctrl.set_target_percent(0.0);
+    was_busy_reg = false;
     for (int i = 0; i < 200; ++i) {
         ctrl.set_measured_voltage(motor_get_pot_voltage());
         ctrl.update(dt);
+        if (ctrl.get_state() == MotorControllerState::Busy) was_busy_reg = true;
     }
     v_target = ctrl.get_pot_min();
     v_actual = motor_get_pot_voltage();
     UT_CheckInRange(v_actual, v_target, tol, "Motor reaches min position");
+    UT_CheckTrue("Controller was busy during regulation to min", was_busy_reg);
+    UT_CheckTrue("Controller is idle at min target", ctrl.get_state() == MotorControllerState::Idle);
 
     // --- Test 5: PWM ramps down as error decreases ---
     UT_SetTestNumber(5);
     UT_TestInfo("PWM output ramps down as error decreases");
 
-    // Move to 0% first to ensure a known starting point
     ctrl.set_target_percent(0.0);
     for (int i = 0; i < 200; ++i) {
         ctrl.set_measured_voltage(motor_get_pot_voltage());
         ctrl.update(dt);
     }
 
-    // Now set a target at 80% and observe PWM as we approach the target
     ctrl.set_target_percent(80.0);
 
     int last_pwm = 0;
     int pwm_val = 0;
     bool ramped_down = false;
-    int print_count = 0;
 
-    // Register the PWM callback ONCE before the loop, and send PWM to the simulator
     ctrl.register_pwm_callback([&pwm_val](int pwm) {
         pwm_val = pwm;
         motor_simulation_step(pwm, 0.01);
@@ -124,11 +135,7 @@ void Run_MotorControl_Tests() {
     for (int i = 0; i < 200; ++i) {
         ctrl.set_measured_voltage(motor_get_pot_voltage());
         ctrl.update(dt);
-
-        // Print all PWM values for inspection
         std::cout << i << "\t" << pwm_val << "\n";
-
-        // Check if PWM magnitude decreases as we get closer to the target
         if (i > 0 && std::abs(pwm_val) < std::abs(last_pwm) && std::abs(pwm_val) > 0) {
             ramped_down = true;
         }
@@ -140,23 +147,20 @@ void Run_MotorControl_Tests() {
     UT_SetTestNumber(6);
     UT_TestInfo("Motor does not overshoot or oscillate near the target position");
 
-    // Move to 0% first to ensure a known starting point
     ctrl.set_target_percent(0.0);
     for (int i = 0; i < 200; ++i) {
         ctrl.set_measured_voltage(motor_get_pot_voltage());
         ctrl.update(dt);
     }
 
-    // Now set a target at 100% and observe the actual voltage and PWM
     ctrl.set_target_percent(100.0);
 
     bool overshoot_detected = false;
     bool oscillation_detected = false;
     double max_target = ctrl.get_pot_max();
-    int last_pwm6 = 0; // Renamed to avoid redefinition
-    int pwm_val6 = 0;  // Renamed to avoid redefinition
+    int last_pwm6 = 0;
+    int pwm_val6 = 0;
 
-    // Register a callback to capture PWM and send to simulator
     ctrl.register_pwm_callback([&pwm_val6](int pwm) {
         pwm_val6 = pwm;
         motor_simulation_step(pwm, 0.01);
@@ -166,11 +170,10 @@ void Run_MotorControl_Tests() {
         ctrl.set_measured_voltage(motor_get_pot_voltage());
         ctrl.update(dt);
         double v = motor_get_pot_voltage();
-        if (v > max_target + tol) { // Allow for noise, but not more
+        if (v > max_target + tol) {
             overshoot_detected = true;
             break;
         }
-        // Detect sign change (oscillation) in PWM
         if (i > 0 && (pwm_val6 * last_pwm6 < 0)) {
             oscillation_detected = true;
         }

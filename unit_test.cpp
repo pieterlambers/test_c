@@ -36,15 +36,23 @@ bool UT_CheckInRange_impl(double value, double center, double tolerance, const s
     bool passed = (value >= center - tolerance && value <= center + tolerance);
     std::string msg = std::string(file) + ":" + std::to_string(line) + " | " + text +
         ": value = " + std::to_string(value) + ", center = " + std::to_string(center) +
-        ", tol = " + std::to_string(tolerance) +
-        (passed ? " [PASS]\n" : " [FAIL]\n");
+        ", tol = " + std::to_string(tolerance);
+    if (passed) {
+        msg += " \033[32m[PASS]\033[0m\n"; // Green for PASS
+    } else {
+        msg += " \033[31m[FAIL]\033[0m\n"; // Red for FAIL
+    }
     ut_log(msg);
     return passed;
 }
 
 bool UT_CheckTrue_impl(const std::string& text, bool condition, const char* file, int line) {
-    std::string msg = std::string(file) + ":" + std::to_string(line) + " | " + text +
-        (condition ? " [PASS]\n" : " [FAIL]\n");
+    std::string msg = std::string(file) + ":" + std::to_string(line) + " | " + text;
+    if (condition) {
+        msg += " \033[32m[PASS]\033[0m\n"; // Green for PASS
+    } else {
+        msg += " \033[31m[FAIL]\033[0m\n"; // Red for FAIL
+    }
     ut_log(msg);
     return condition;
 }

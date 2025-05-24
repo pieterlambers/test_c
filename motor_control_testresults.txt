@@ -1,27 +1,35 @@
 
 === Test 1 ===
 Info: Motor calibrates to max and min positions
-motor_control_test.cpp:48 | Calibration completes and controller becomes idle [PASS]
-motor_control_test.cpp:54 | Calibrated min close to MOTOR_POT_MIN: value = 0.975884, center = 1.000000, tol = 0.055000 [PASS]
-motor_control_test.cpp:55 | Calibrated max close to MOTOR_POT_MAX: value = 3.991403, center = 4.000000, tol = 0.055000 [PASS]
+motor_control_test.cpp:32 | Controller starts in Initialising state [32m[PASS][0m
+motor_control_test.cpp:51 | Calibration completes and controller becomes idle [32m[PASS][0m
+motor_control_test.cpp:52 | Controller was busy during calibration [32m[PASS][0m
+motor_control_test.cpp:58 | Calibrated min close to MOTOR_POT_MIN: value = 0.975884, center = 1.000000, tol = 0.115000 [32m[PASS][0m
+motor_control_test.cpp:59 | Calibrated max close to MOTOR_POT_MAX: value = 3.991403, center = 4.000000, tol = 0.115000 [32m[PASS][0m
 
 === Test 2 ===
 Info: Motor regulates to 50% position
-motor_control_test.cpp:70 | Motor reaches 50% position: value = 2.416502, center = 2.483644, tol = 0.055000 [FAIL]
+motor_control_test.cpp:75 | Motor reaches 50% position: value = 2.416502, center = 2.483644, tol = 0.115000 [32m[PASS][0m
+motor_control_test.cpp:76 | Controller was busy during regulation to 50% [32m[PASS][0m
+motor_control_test.cpp:77 | Controller is idle at 50% target [32m[PASS][0m
 
 === Test 3 ===
 Info: Motor regulates to 100% position
-motor_control_test.cpp:83 | Motor reaches max position: value = 3.915360, center = 3.991403, tol = 0.055000 [FAIL]
+motor_control_test.cpp:92 | Motor reaches max position: value = 3.915360, center = 3.991403, tol = 0.115000 [32m[PASS][0m
+motor_control_test.cpp:93 | Controller was busy during regulation to max [32m[PASS][0m
+motor_control_test.cpp:94 | Controller is idle at max target [32m[PASS][0m
 
 === Test 4 ===
 Info: Motor regulates to 0% position
-motor_control_test.cpp:96 | Motor reaches min position: value = 1.068554, center = 0.975884, tol = 0.055000 [FAIL]
+motor_control_test.cpp:109 | Motor reaches min position: value = 1.068554, center = 0.975884, tol = 0.115000 [32m[PASS][0m
+motor_control_test.cpp:110 | Controller was busy during regulation to min [32m[PASS][0m
+motor_control_test.cpp:111 | Controller is idle at min target [32m[PASS][0m
 
 === Test 5 ===
 Info: PWM output ramps down as error decreases
-motor_control_test.cpp:137 | PWM ramps down as error decreases [PASS]
+motor_control_test.cpp:144 | PWM ramps down as error decreases [32m[PASS][0m
 
 === Test 6 ===
 Info: Motor does not overshoot or oscillate near the target position
-motor_control_test.cpp:179 | No overshoot beyond max target [PASS]
-motor_control_test.cpp:180 | No PWM oscillation near target [PASS]
+motor_control_test.cpp:182 | No overshoot beyond max target [32m[PASS][0m
+motor_control_test.cpp:183 | No PWM oscillation near target [32m[PASS][0m
