@@ -12,7 +12,8 @@ public:
     explicit MotorController(double noise_level = 0.0,
                             int pwm_max = 1000,
                             int pwm_min = 150,
-                            double error_full = 0.5);
+                            double error_full = 0.5,
+                            double default_ramp_up_time_s = 2.0);
 
     void start_calibration(double hold_time_s);
     void update(double dt_s);
@@ -28,6 +29,11 @@ public:
     // Access calibrated min/max values
     double get_pot_min() const { return pot_min_; }
     double get_pot_max() const { return pot_max_; }
+
+    void set_ramp_up_time(double time_s);
+
+    // Getter for testing purposes
+    double get_current_percent_for_test() const { return current_percent_; }
 
 private:
     enum class CalibState {
@@ -59,4 +65,12 @@ private:
     int pwm_max_;
     int pwm_min_;
     double error_full_;
+
+    // Ramping parameters
+    double current_percent_;
+    double final_target_percent_;
+    double initial_percent_for_ramp_;
+    double ramp_up_time_s_;
+    double ramp_timer_s_;
+    bool is_ramping_;
 };
