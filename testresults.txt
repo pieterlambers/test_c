@@ -4,3 +4,6 @@ motor_simulation_test.cpp:13 | Initial voltage at min: value = 0, center = 0 [PA
 motor_simulation_test.cpp:18 | Voltage increases after max PWM step [PASS]
 motor_simulation_test.cpp:23 | Voltage returns to min after negative PWM: value = 0, center = 0 [PASS]
 motor_simulation_test.cpp:29 | Voltage unchanged with zero PWM: value = 0, center = 0 [PASS]
+motor_simulation_test.cpp:37 | Motor moves at correct speed (positive): value = 2500, center = 2500 [PASS]
+motor_simulation_test.cpp:44 | Motor saturates at max voltage: value = 5000, center = 5000 [PASS]
+motor_simulation_test.cpp:53 | Motor saturates at min voltage: value = 0, center = 0 [PASS]

@@ -1,6 +1,7 @@
 #include "unit_test.h"
 #include <iostream>
 #include <fstream>
+#include <cstdio> // For std::remove
 
 static std::ofstream ut_log_file;
 
@@ -8,6 +9,8 @@ void UT_SetLogFile(const std::string& filename) {
     if (ut_log_file.is_open()) {
         ut_log_file.close();
     }
+    // Delete the file if it exists
+    std::remove(filename.c_str());
     ut_log_file.open(filename, std::ios::out | std::ios::app);
 }
 
