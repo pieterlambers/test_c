@@ -6,7 +6,6 @@
 // Helper: Simulate time steps and update both simulation and controller
 void simulate_motor(MotorController& ctrl, double duration_s, double dt_s) {
     for (double t = 0; t < duration_s; t += dt_s) {
-        // The controller sets the PWM via callback, so we just need to update the simulation and feed back the measured voltage
         ctrl.set_measured_voltage(motor_get_pot_voltage());
         ctrl.update(dt_s);
         // The PWM callback will call motor_simulation_step()
@@ -22,7 +21,8 @@ void Run_MotorControl_Tests() {
     UT_TestInfo("Motor calibrates to max and min positions");
 
     motor_simulation_reset();
-    MotorController ctrl;
+    // Pass the noise level from the simulation to the controller
+    MotorController ctrl(MOTOR_MEAS_NOISE_V);
 
     // Register PWM callback to drive the simulation
     ctrl.register_pwm_callback([](int pwm) {
@@ -47,18 +47,19 @@ void Run_MotorControl_Tests() {
     }
     UT_CheckTrue("Calibration completes and controller becomes idle", calibrated);
 
+    // Use a tolerance slightly above the noise amplitude (in mV)
+    int tol = static_cast<int>(MOTOR_MEAS_NOISE_V * 1000) + 5;
+
     // Check that calibrated min/max are close to simulation limits
-    UT_CheckInRange((int)(ctrl.get_pot_min() * 1000), (int)(MOTOR_POT_MIN * 1000), 10, "Calibrated min close to MOTOR_POT_MIN");
-    UT_CheckInRange((int)(ctrl.get_pot_max() * 1000), (int)(MOTOR_POT_MAX * 1000), 10, "Calibrated max close to MOTOR_POT_MAX");
+    UT_CheckInRange((int)(ctrl.get_pot_min() * 1000), (int)(MOTOR_POT_MIN * 1000), tol, "Calibrated min close to MOTOR_POT_MIN");
+    UT_CheckInRange((int)(ctrl.get_pot_max() * 1000), (int)(MOTOR_POT_MAX * 1000), tol, "Calibrated max close to MOTOR_POT_MAX");
 
     // --- Test 2: Regulation to a position ---
     UT_SetTestNumber(2);
     UT_TestInfo("Motor regulates to 50% position");
 
-    // Set target to 50%
     ctrl.set_target_percent(50.0);
 
-    // Simulate for 2 seconds
     for (int i = 0; i < 200; ++i) {
         ctrl.set_measured_voltage(motor_get_pot_voltage());
         ctrl.update(dt);
@@ -66,7 +67,7 @@ void Run_MotorControl_Tests() {
 
     double v_target = ctrl.get_pot_min() + 0.5 * (ctrl.get_pot_max() - ctrl.get_pot_min());
     double v_actual = motor_get_pot_voltage();
-    UT_CheckInRange((int)(v_actual * 1000), (int)(v_target * 1000), 10, "Motor reaches 50% position");
+    UT_CheckInRange((int)(v_actual * 1000), (int)(v_target * 1000), tol, "Motor reaches 50% position");
 
     // --- Test 3: Regulation to max position ---
     UT_SetTestNumber(3);
@@ -79,7 +80,7 @@ void Run_MotorControl_Tests() {
     }
     v_target = ctrl.get_pot_max();
     v_actual = motor_get_pot_voltage();
-    UT_CheckInRange((int)(v_actual * 1000), (int)(v_target * 1000), 10, "Motor reaches max position");
+    UT_CheckInRange((int)(v_actual * 1000), (int)(v_target * 1000), tol, "Motor reaches max position");
 
     // --- Test 4: Regulation to min position ---
     UT_SetTestNumber(4);
@@ -92,7 +93,7 @@ void Run_MotorControl_Tests() {
     }
     v_target = ctrl.get_pot_min();
     v_actual = motor_get_pot_voltage();
-    UT_CheckInRange((int)(v_actual * 1000), (int)(v_target * 1000), 10, "Motor reaches min position");
+    UT_CheckInRange((int)(v_actual * 1000), (int)(v_target * 1000), tol, "Motor reaches min position");
 
     std::cout << "Motor control tests complete.\n";
 }

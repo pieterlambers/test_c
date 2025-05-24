@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include "motor_simulation.h"
 
 // Simple motor simulation
@@ -27,10 +28,13 @@ void motor_simulation_step(int pwm, double dt_s) {
     if (motor_position > MOTOR_POS_MAX) motor_position = MOTOR_POS_MAX;
 }
 
-// Get potentiometer voltage based on position
+// Get potentiometer voltage based on position, with optional simple noise
 double motor_get_pot_voltage() {
-    // Linear interpolation between MOTOR_POT_MIN and MOTOR_POT_MAX
-    return MOTOR_POT_MIN + (motor_position - MOTOR_POS_MIN) * VOLTS_PER_POS;
+    double voltage = MOTOR_POT_MIN + (motor_position - MOTOR_POS_MIN) * VOLTS_PER_POS;
+
+    // Simple uniform noise in range [-MOTOR_MEAS_NOISE_V, +MOTOR_MEAS_NOISE_V]
+    voltage += ((2.0 * rand() / RAND_MAX) - 1.0) * MOTOR_MEAS_NOISE_V;
+    return voltage;
 }
 
 // Optionally, reset simulation

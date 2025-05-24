@@ -9,7 +9,8 @@ enum class MotorControllerState {
 
 class MotorController {
 public:
-    MotorController();
+    // Add noise_level as a parameter with a default value
+    explicit MotorController(double noise_level = 0.0);
 
     void start_calibration(double hold_time_s);
     void update(double dt_s);
@@ -51,4 +52,5 @@ private:
     double pot_max_;
     double prev_measured_voltage_;
     double stable_timer_;
+    double noise_level_; // Noise amplitude (V) for stability threshold
 };

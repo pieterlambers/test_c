@@ -7,6 +7,7 @@
 #define MOTOR_POT_MAX   5.0            // Potentiometer max voltage (for position 100)
 #define MOTOR_POS_MIN   0.0            // Min position
 #define MOTOR_POS_MAX   100.0          // Max position
+#define MOTOR_MEAS_NOISE_V 0.05         // Noise amplitude (V) on measured voltage
 
 void motor_simulation_step(int pwm, double dt_s); // dt_s: step in seconds
 double motor_get_pot_voltage();

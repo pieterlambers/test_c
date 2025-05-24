@@ -1,6 +1,7 @@
 #include "motor_control.h"
+#include <cmath>
 
-MotorController::MotorController()
+MotorController::MotorController(double noise_level)
     : calib_state_(CalibState::NotCalibrated),
       public_state_(MotorControllerState::Initialising),
       hold_time_s_(1.0),
@@ -10,7 +11,10 @@ MotorController::MotorController()
       pwm_cb_(nullptr),
       hysteresis_(0.01),
       pot_min_(0.0),
-      pot_max_(1.0) // default, will be set by calibration
+      pot_max_(1.0), // default, will be set by calibration
+      prev_measured_voltage_(0.0),
+      stable_timer_(0.0),
+      noise_level_(noise_level)
 {}
 
 void MotorController::set_measured_voltage(double volts) {
@@ -39,10 +43,15 @@ void MotorController::start_calibration(double hold_time_s) {
     // Optionally reset min/max
     pot_min_ = 0.0;
     pot_max_ = 1.0;
+    stable_timer_ = 0.0;
+    prev_measured_voltage_ = measured_voltage_;
 }
 
 void MotorController::update(double dt_s) {
-    const double stable_threshold = 0.001; // Volts, adjust as needed
+    // The stable_threshold is set to noise_level_ * 1.2.
+    // The factor 1.2 is a safety margin to ensure that the threshold is slightly larger than the expected measurement noise,
+    // making the detection of a stable (stopped) motor robust against random noise fluctuations.
+    const double stable_threshold = noise_level_ * 1.2;
 
     switch (calib_state_) {
         case CalibState::NotCalibrated:
