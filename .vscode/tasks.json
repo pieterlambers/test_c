@@ -9,6 +9,7 @@
                 "-fansi-escape-codes",
                 "-g",
                 "${file}",
+                "utils.cpp",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
             ],
