@@ -4,11 +4,8 @@
 
 static double motor_position = 0.0; // Position in arbitrary units
 static double motor_speed = 0.0;    // Speed in units/ms
-static const double max_speed = 0.005; // Max speed per ms at full PWM
-static const double pot_min = 0.0;  // Potentiometer min voltage
-static const double pot_max = 5.0;  // Potentiometer max voltage
-static const double pos_min = 0.0;  // Min position (maps to 0V)
-static const double pos_max = 1000.0; // Max position (maps to 5V)
+
+// Use #defines from header directly, do not keep local const variables
 
 // Simulate one time step (dt in ms), pwm in range [-1000, 1000]
 void motor_simulation_step(int pwm, double dt_ms) {
@@ -17,21 +14,21 @@ void motor_simulation_step(int pwm, double dt_ms) {
     if (pwm < -1000) pwm = -1000;
 
     // Calculate speed proportional to PWM
-    motor_speed = (pwm / 1000.0) * max_speed;
+    motor_speed = (pwm / 1000.0) * MOTOR_MAX_SPEED;
 
     // Integrate position
     motor_position += motor_speed * dt_ms;
 
     // Clamp position to valid range
-    if (motor_position < pos_min) motor_position = pos_min;
-    if (motor_position > pos_max) motor_position = pos_max;
+    if (motor_position < MOTOR_POS_MIN) motor_position = MOTOR_POS_MIN;
+    if (motor_position > MOTOR_POS_MAX) motor_position = MOTOR_POS_MAX;
 }
 
 // Get potentiometer voltage (0-5V) based on position
 double motor_get_pot_voltage() {
-    double voltage = pot_min + (motor_position - pos_min) * (pot_max - pot_min) / (pos_max - pos_min);
-    if (voltage < pot_min) voltage = pot_min;
-    if (voltage > pot_max) voltage = pot_max;
+    double voltage = MOTOR_POT_MIN + (motor_position - MOTOR_POS_MIN) * (MOTOR_POT_MAX - MOTOR_POT_MIN) / (MOTOR_POS_MAX - MOTOR_POS_MIN);
+    if (voltage < MOTOR_POT_MIN) voltage = MOTOR_POT_MIN;
+    if (voltage > MOTOR_POT_MAX) voltage = MOTOR_POT_MAX;
     return voltage;
 }
 

@@ -8,12 +8,12 @@
                 "-fcolor-diagnostics",
                 "-fansi-escape-codes",
                 "-g",
-                "${file}",
-                "utils.cpp",
+                "motor_prj.cpp",
+                "unit_test.cpp",
                 "motor_control.cpp",
                 "motor_simulation.cpp",
                 "-o",
-                "${fileDirname}/${fileBasenameNoExtension}"
+                "${fileDirname}/motor_prj"
             ],
             "options": {
                 "cwd": "${fileDirname}"
