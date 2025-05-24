@@ -1,0 +1,2 @@
+motor_prj.cpp:15 | Five is in range 1-10: value = 5, center = 1 [PASS]
+motor_prj.cpp:16 | Addition check [PASS]

@@ -7,6 +7,9 @@ int add(int a, int b) {
 }
 
 int main() {
+    // Set log file for test results
+    UT_SetLogFile("testresults.txt");
+
     std::cout << "Hello, World!" << std::endl;
 
     UT_CheckInRange(5, 1, 10, "Five is in range 1-10");
