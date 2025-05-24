@@ -1,2 +1,6 @@
-motor_prj.cpp:15 | Five is in range 1-10: value = 5, center = 1 [PASS]
-motor_prj.cpp:16 | Addition check [PASS]
+motor_prj.cpp:16 | Five is in range 1-10: value = 5, center = 1 [PASS]
+motor_prj.cpp:17 | Addition check [PASS]
+motor_simulation_test.cpp:13 | Initial voltage at min: value = 0, center = 0 [PASS]
+motor_simulation_test.cpp:18 | Voltage increases after max PWM step [PASS]
+motor_simulation_test.cpp:23 | Voltage returns to min after negative PWM: value = 0, center = 0 [PASS]
+motor_simulation_test.cpp:29 | Voltage unchanged with zero PWM: value = 0, center = 0 [PASS]
