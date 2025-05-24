@@ -4,32 +4,63 @@ Info: Motor calibrates to max and min positions
 motor_control_test.cpp:32 | Controller starts in Initialising state [32m[PASS][0m
 motor_control_test.cpp:51 | Calibration completes and controller becomes idle [32m[PASS][0m
 motor_control_test.cpp:52 | Controller was busy during calibration [32m[PASS][0m
-motor_control_test.cpp:58 | Calibrated min close to MOTOR_POT_MIN: value = 0.975884, center = 1.000000, tol = 0.115000 [32m[PASS][0m
-motor_control_test.cpp:59 | Calibrated max close to MOTOR_POT_MAX: value = 3.991403, center = 4.000000, tol = 0.115000 [32m[PASS][0m
+motor_control_test.cpp:58 | Calibrated min close to MOTOR_POT_MIN: value = 0.963824, center = 1.000000, tol = 0.115000 [32m[PASS][0m
+motor_control_test.cpp:59 | Calibrated max close to MOTOR_POT_MAX: value = 3.954086, center = 4.000000, tol = 0.115000 [32m[PASS][0m
 
 === Test 2 ===
 Info: Motor regulates to 50% position
-motor_control_test.cpp:75 | Motor reaches 50% position: value = 2.416502, center = 2.483644, tol = 0.115000 [32m[PASS][0m
-motor_control_test.cpp:76 | Controller was busy during regulation to 50% [32m[PASS][0m
-motor_control_test.cpp:77 | Controller is idle at 50% target [32m[PASS][0m
+motor_control_test.cpp:76 | Motor reaches 50% position: value = 2.435792, center = 2.458955, tol = 0.115000 [32m[PASS][0m
+motor_control_test.cpp:77 | Controller was busy during regulation to 50% [32m[PASS][0m
+motor_control_test.cpp:78 | Controller is idle at 50% target [32m[PASS][0m
 
 === Test 3 ===
 Info: Motor regulates to 100% position
-motor_control_test.cpp:92 | Motor reaches max position: value = 3.915360, center = 3.991403, tol = 0.115000 [32m[PASS][0m
-motor_control_test.cpp:93 | Controller was busy during regulation to max [32m[PASS][0m
-motor_control_test.cpp:94 | Controller is idle at max target [32m[PASS][0m
+motor_control_test.cpp:94 | Motor reaches max position: value = 3.875924, center = 3.954086, tol = 0.115000 [32m[PASS][0m
+motor_control_test.cpp:95 | Controller was busy during regulation to max [32m[PASS][0m
+motor_control_test.cpp:96 | Controller is idle at max target [32m[PASS][0m
 
 === Test 4 ===
 Info: Motor regulates to 0% position
-motor_control_test.cpp:109 | Motor reaches min position: value = 1.068554, center = 0.975884, tol = 0.115000 [32m[PASS][0m
-motor_control_test.cpp:110 | Controller was busy during regulation to min [32m[PASS][0m
-motor_control_test.cpp:111 | Controller is idle at min target [32m[PASS][0m
+motor_control_test.cpp:112 | Motor reaches min position: value = 0.999429, center = 0.963824, tol = 0.115000 [32m[PASS][0m
+motor_control_test.cpp:113 | Controller was busy during regulation to min [32m[PASS][0m
+motor_control_test.cpp:114 | Controller is idle at min target [32m[PASS][0m
 
 === Test 5 ===
 Info: PWM output ramps down as error decreases
-motor_control_test.cpp:144 | PWM ramps down as error decreases [32m[PASS][0m
+motor_control_test.cpp:149 | PWM ramps down as error decreases [32m[PASS][0m
 
 === Test 6 ===
 Info: Motor does not overshoot or oscillate near the target position
-motor_control_test.cpp:182 | No overshoot beyond max target [32m[PASS][0m
-motor_control_test.cpp:183 | No PWM oscillation near target [32m[PASS][0m
+motor_control_test.cpp:189 | No overshoot beyond max target [32m[PASS][0m
+motor_control_test.cpp:190 | No PWM oscillation near target [32m[PASS][0m
+
+=== Test 7 ===
+Info: current_percent_ ramps up over time
+motor_control_test.cpp:206 | RampTest1: Calibration completed [32m[PASS][0m
+motor_control_test.cpp:214 | RampTest1: Initial current_percent_ near 0: value = 0.000000, center = 0.000000, tol = 1.000000 [32m[PASS][0m
+motor_control_test.cpp:220 | current_percent_ starts at 0: value = 0.000000, center = 0.000000, tol = 0.001000 [32m[PASS][0m
+motor_control_test.cpp:227 | current_percent_ near 50% at 0.5s: value = 50.000000, center = 50.000000, tol = 5.000000 [32m[PASS][0m
+motor_control_test.cpp:234 | current_percent_ near 100% at 1.0s: value = 100.000000, center = 100.000000, tol = 5.000000 [32m[PASS][0m
+
+=== Test 8 ===
+Info: Ramps to a new target if changed mid-ramp
+motor_control_test.cpp:247 | RampTest2: Calibration completed [32m[PASS][0m
+motor_control_test.cpp:254 | Initial current_percent_ is 0: value = 0.000000, center = 0.000000, tol = 1.000000 [32m[PASS][0m
+motor_control_test.cpp:265 | current_percent_ near 50% at 0.5s before new target: value = 50.000000, center = 50.000000, tol = 5.000000 [32m[PASS][0m
+motor_control_test.cpp:268 | RampTest2: is_ramping is true after new target [32m[PASS][0m
+motor_control_test.cpp:278 | current_percent_ halfway to new target 0%: value = 25.000000, center = 25.000000, tol = 5.000000 [32m[PASS][0m
+motor_control_test.cpp:285 | current_percent_ reached new target 0%: value = 0.000000, center = 0.000000, tol = 5.000000 [32m[PASS][0m
+
+=== Test 9 ===
+Info: current_percent_ jumps to target if ramp time is zero
+motor_control_test.cpp:298 | RampTest3: Calibration completed [32m[PASS][0m
+motor_control_test.cpp:309 | current_percent_ immediately 75%: value = 75.000000, center = 75.000000, tol = 0.001000 [32m[PASS][0m
+
+=== Test 10 ===
+Info: Reaches target after ramp and maintains it, becoming Idle
+motor_control_test.cpp:322 | RampTest4: Calibration completed [32m[PASS][0m
+motor_control_test.cpp:329 | Initial current_percent_ is 0: value = 0.000000, center = 0.000000, tol = 1.000000 [32m[PASS][0m
+motor_control_test.cpp:341 | current_percent_ reached target at ramp end: value = 60.000000, center = 60.000000, tol = 5.000000 [32m[PASS][0m
+motor_control_test.cpp:345 | current_percent_ maintained post-ramp: value = 60.000000, center = 60.000000, tol = 5.000000 [32m[PASS][0m
+motor_control_test.cpp:350 | Motor physical position matches target post-ramp: value = 2.712560, center = 2.780273, tol = 0.115000 [32m[PASS][0m
+motor_control_test.cpp:351 | RampTest4: Controller is Idle at target [32m[PASS][0m
