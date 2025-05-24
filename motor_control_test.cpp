@@ -47,12 +47,12 @@ void Run_MotorControl_Tests() {
     }
     UT_CheckTrue("Calibration completes and controller becomes idle", calibrated);
 
-    // Use a tolerance slightly above the noise amplitude (in mV)
-    int tol = static_cast<int>(MOTOR_MEAS_NOISE_V * 1000) + 5;
+    // Use a tolerance slightly above the noise amplitude (in V)
+    double tol = MOTOR_MEAS_NOISE_V + 0.005;
 
     // Check that calibrated min/max are close to simulation limits
-    UT_CheckInRange((int)(ctrl.get_pot_min() * 1000), (int)(MOTOR_POT_MIN * 1000), tol, "Calibrated min close to MOTOR_POT_MIN");
-    UT_CheckInRange((int)(ctrl.get_pot_max() * 1000), (int)(MOTOR_POT_MAX * 1000), tol, "Calibrated max close to MOTOR_POT_MAX");
+    UT_CheckInRange(ctrl.get_pot_min(), MOTOR_POT_MIN, tol, "Calibrated min close to MOTOR_POT_MIN");
+    UT_CheckInRange(ctrl.get_pot_max(), MOTOR_POT_MAX, tol, "Calibrated max close to MOTOR_POT_MAX");
 
     // --- Test 2: Regulation to a position ---
     UT_SetTestNumber(2);
@@ -67,7 +67,7 @@ void Run_MotorControl_Tests() {
 
     double v_target = ctrl.get_pot_min() + 0.5 * (ctrl.get_pot_max() - ctrl.get_pot_min());
     double v_actual = motor_get_pot_voltage();
-    UT_CheckInRange(v_actual, v_target, MOTOR_MEAS_NOISE_V + 0.005, "Motor reaches 50% position");
+    UT_CheckInRange(v_actual, v_target, tol, "Motor reaches 50% position");
 
     // --- Test 3: Regulation to max position ---
     UT_SetTestNumber(3);
@@ -80,7 +80,7 @@ void Run_MotorControl_Tests() {
     }
     v_target = ctrl.get_pot_max();
     v_actual = motor_get_pot_voltage();
-    UT_CheckInRange(v_actual, v_target, MOTOR_MEAS_NOISE_V + 0.005, "Motor reaches max position");
+    UT_CheckInRange(v_actual, v_target, tol, "Motor reaches max position");
 
     // --- Test 4: Regulation to min position ---
     UT_SetTestNumber(4);
@@ -93,7 +93,7 @@ void Run_MotorControl_Tests() {
     }
     v_target = ctrl.get_pot_min();
     v_actual = motor_get_pot_voltage();
-    UT_CheckInRange(v_actual, v_target, MOTOR_MEAS_NOISE_V + 0.005, "Motor reaches min position");
+    UT_CheckInRange(v_actual, v_target, tol, "Motor reaches min position");
 
     std::cout << "Motor control tests complete.\n";
 }

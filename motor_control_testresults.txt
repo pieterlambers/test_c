@@ -2,8 +2,8 @@
 === Test 1 ===
 Info: Motor calibrates to max and min positions
 motor_control_test.cpp:48 | Calibration completes and controller becomes idle [PASS]
-motor_control_test.cpp:54 | Calibrated min close to MOTOR_POT_MIN: value = -6.000000, center = 0.000000, tol = 55.000000 [PASS]
-motor_control_test.cpp:55 | Calibrated max close to MOTOR_POT_MAX: value = 4991.000000, center = 5000.000000, tol = 55.000000 [PASS]
+motor_control_test.cpp:54 | Calibrated min close to MOTOR_POT_MIN: value = -0.006915, center = 0.000000, tol = 0.055000 [PASS]
+motor_control_test.cpp:55 | Calibrated max close to MOTOR_POT_MAX: value = 4.991403, center = 5.000000, tol = 0.055000 [PASS]
 
 === Test 2 ===
 Info: Motor regulates to 50% position
